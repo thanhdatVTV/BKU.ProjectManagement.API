@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BKU.ProjectManagement.API/BKU.ProjectManagement.API.csproj" />
+  <Project Path="BKU.ProjectManagement.Repositories/BKU.ProjectManagement.Repositories.csproj" />
+  <Project Path="BKU.ProjectManagement.Services/BKU.ProjectManagement.Services.csproj" />
+  <Project Path="BKU.ProjectManagement.Shared/BKU.ProjectManagement.Shared.csproj" />
+</Solution>

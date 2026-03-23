@@ -1,0 +1,11 @@
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\bin\Debug\net8.0\BKU.ProjectManagement.Shared.deps.json
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\bin\Debug\net8.0\BKU.ProjectManagement.Shared.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\bin\Debug\net8.0\BKU.ProjectManagement.Shared.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\BKU.ProjectManagement.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\BKU.ProjectManagement.Shared.AssemblyInfoInputs.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\BKU.ProjectManagement.Shared.AssemblyInfo.cs
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\BKU.ProjectManagement.Shared.csproj.CoreCompileInputs.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\BKU.ProjectManagement.Shared.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\refint\BKU.ProjectManagement.Shared.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\BKU.ProjectManagement.Shared.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Shared\obj\Debug\net8.0\ref\BKU.ProjectManagement.Shared.dll

@@ -1,0 +1,6 @@
+@BKU.ProjectManagement.API_HostAddress = http://localhost:5232
+
+GET {{BKU.ProjectManagement.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

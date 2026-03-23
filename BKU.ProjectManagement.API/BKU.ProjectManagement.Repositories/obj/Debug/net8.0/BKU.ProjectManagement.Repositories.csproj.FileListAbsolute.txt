@@ -1,0 +1,17 @@
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\bin\Debug\net8.0\BKU.ProjectManagement.Repositories.deps.json
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\bin\Debug\net8.0\BKU.ProjectManagement.Repositories.runtimeconfig.json
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\bin\Debug\net8.0\BKU.ProjectManagement.Repositories.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\bin\Debug\net8.0\BKU.ProjectManagement.Repositories.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\bin\Debug\net8.0\BKU.ProjectManagement.Shared.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\bin\Debug\net8.0\BKU.ProjectManagement.Shared.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.csproj.AssemblyReference.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.GeneratedMSBuildEditorConfig.editorconfig
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.AssemblyInfoInputs.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.AssemblyInfo.cs
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.csproj.CoreCompileInputs.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.Proj.56AA84DB.Up2Date
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\refint\BKU.ProjectManagement.Repositories.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.genruntimeconfig.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\ref\BKU.ProjectManagement.Repositories.dll
