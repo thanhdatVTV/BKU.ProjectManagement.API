@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BKU.ProjectManagement.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+048775743ae8bea6c03f14e64f8ea7e5d7f22056")]
 [assembly: System.Reflection.AssemblyProductAttribute("BKU.ProjectManagement.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BKU.ProjectManagement.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

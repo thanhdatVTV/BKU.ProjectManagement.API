@@ -15,3 +15,4 @@ C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.P
 C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.pdb
 C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.genruntimeconfig.cache
 C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\ref\BKU.ProjectManagement.Repositories.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Repositories\obj\Debug\net8.0\BKU.ProjectManagement.Repositories.sourcelink.json

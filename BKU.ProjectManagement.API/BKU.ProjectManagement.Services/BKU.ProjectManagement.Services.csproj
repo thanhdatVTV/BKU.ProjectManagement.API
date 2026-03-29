@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
-    <Folder Include="Implements\" />
-    <Folder Include="Interfaces\" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BKU.ProjectManagement.Repositories\BKU.ProjectManagement.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,16 +2,16 @@ version: '3.8'
 
 services:
   db:
-      image: mcr.microsoft.com/mssql/server:2022-latest
-      environment:
-        - ACCEPT_EULA=Y
-        - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
-      expose:
-        - "1433"
-      volumes:
-        - sql_data:/var/opt/mssql
-      networks:
-        - app-network
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    expose:
+      - "1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - app-network
 
   api:
     image: bku-project-management-api
@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - ConnectionStrings__BKUConnection=Server=db;Database=BKU_SPMS_DB;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+      - ConnectionStrings__BKUConnection=Server=db;Database=BKU_SPMS_DB;User Id=sa;Password=Hanh@2205;TrustServerCertificate=True;
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
     ports:

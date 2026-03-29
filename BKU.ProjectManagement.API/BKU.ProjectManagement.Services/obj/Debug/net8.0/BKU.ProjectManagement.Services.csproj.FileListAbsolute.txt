@@ -9,3 +9,10 @@ C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.P
 C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\obj\Debug\net8.0\refint\BKU.ProjectManagement.Services.dll
 C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\obj\Debug\net8.0\BKU.ProjectManagement.Services.pdb
 C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\obj\Debug\net8.0\ref\BKU.ProjectManagement.Services.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\obj\Debug\net8.0\BKU.ProjectManagement.Services.sourcelink.json
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\bin\Debug\net8.0\BKU.ProjectManagement.Repositories.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\bin\Debug\net8.0\BKU.ProjectManagement.Shared.dll
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\bin\Debug\net8.0\BKU.ProjectManagement.Repositories.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\bin\Debug\net8.0\BKU.ProjectManagement.Shared.pdb
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\obj\Debug\net8.0\BKU.ProjectManagement.Services.csproj.AssemblyReference.cache
+C:\ThanhDat\SourceCode\bku-project-managemet-api\BKU.ProjectManagement.API\BKU.ProjectManagement.Services\obj\Debug\net8.0\BKU.Proj.9A57DF83.Up2Date

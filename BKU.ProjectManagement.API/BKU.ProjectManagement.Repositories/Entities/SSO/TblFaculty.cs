@@ -15,6 +15,5 @@ namespace BKU.ProjectManagement.Repositories.Entities.SSO
 
         public virtual TblCourse Course { get; set; } = null!;
         public virtual ICollection<TblMajor> TblMajors { get; set; } = new List<TblMajor>();
-        public virtual ICollection<TblIndustry> TblIndustries { get; set; } = new List<TblIndustry>();
     }
 }

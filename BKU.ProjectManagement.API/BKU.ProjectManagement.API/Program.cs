@@ -1,4 +1,8 @@
 using BKU.ProjectManagement.Repositories.Context;
+using BKU.ProjectManagement.Repositories.Repositories.Implements;
+using BKU.ProjectManagement.Repositories.Repositories.Interfaces;
+using BKU.ProjectManagement.Services.Implements;
+using BKU.ProjectManagement.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+// Register Repositories
+builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+
+// Register Services
+builder.Services.AddScoped<ISemesterService, SemesterService>();
 
 builder.Services.AddDbContext<ProjectManagementDbContext>(options =>
     options.UseSqlServer(
