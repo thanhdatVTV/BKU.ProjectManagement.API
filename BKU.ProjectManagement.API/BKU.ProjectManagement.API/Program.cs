@@ -1,20 +1,21 @@
+using BKU.ProjectManagement.API.Extensions;
 using BKU.ProjectManagement.Repositories.Context;
 using BKU.ProjectManagement.Repositories.Repositories.Implements;
 using BKU.ProjectManagement.Repositories.Repositories.Interfaces;
 using BKU.ProjectManagement.Services.Implements;
 using BKU.ProjectManagement.Services.Interfaces;
+using BKU.ProjectManagement.Services.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
-// Register Repositories
+// Register Repositories & Services via Extension
+builder.Services.AddProjectServices();
+// Add Semester manually for now or move it to extension
 builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
-
-// Register Services
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 
 builder.Services.AddDbContext<ProjectManagementDbContext>(options =>
@@ -22,6 +23,9 @@ builder.Services.AddDbContext<ProjectManagementDbContext>(options =>
         builder.Configuration.GetConnectionString("BKUConnection")
         ?? throw new InvalidOperationException("Connection string 'BKUConnection' was not found.")
     ));
+
+// Register AutoMapper
+builder.Services.AddAutoMapper(new[] { typeof(MappingProfile).Assembly });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

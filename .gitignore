@@ -1,0 +1,32 @@
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# Visual Studio
+.vs/
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Docker
+.docker/
+*.tar
+*.tar.gz
+
+# Environment files
+.env
+.env*
+!.env.example
+
+# SQL Server
+*.mdf
+*.ldf
+
+# OS generated files
+.DS_Store
+Thumbs.db
