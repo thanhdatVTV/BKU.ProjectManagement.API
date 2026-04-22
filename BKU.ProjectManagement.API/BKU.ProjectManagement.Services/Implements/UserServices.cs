@@ -22,6 +22,9 @@ namespace BKU.ProjectManagement.Services.Implements
         private readonly ITblTeacherRepository _ssoTeacherRepository;
         private readonly IAppStudentRepository _studentRepository;
         private readonly IAppLecturerRepository _lecturerRepository;
+        private readonly IAppCourseRepository _courseRepository;
+        private readonly IAppMajorRepository _majorRepository;
+        private readonly IAppClassGroupRepository _classGroupRepository;
         private readonly IMapper _mapper;
 
         public AppUserService(
@@ -31,6 +34,9 @@ namespace BKU.ProjectManagement.Services.Implements
             ITblTeacherRepository ssoTeacherRepository,
             IAppStudentRepository studentRepository,
             IAppLecturerRepository lecturerRepository,
+            IAppCourseRepository courseRepository,
+            IAppMajorRepository majorRepository,
+            IAppClassGroupRepository classGroupRepository,
             IMapper mapper)
         {
             _repository = repository;
@@ -39,6 +45,9 @@ namespace BKU.ProjectManagement.Services.Implements
             _ssoTeacherRepository = ssoTeacherRepository;
             _studentRepository = studentRepository;
             _lecturerRepository = lecturerRepository;
+            _courseRepository = courseRepository;
+            _majorRepository = majorRepository;
+            _classGroupRepository = classGroupRepository;
             _mapper = mapper;
         }
 
@@ -124,6 +133,9 @@ namespace BKU.ProjectManagement.Services.Implements
             localUser.LastLoginAt = DateTime.Now;
             await _repository.Update(localUser);
 
+            // Sync user profile from SSO to local AppStudent or AppLecturer
+            await SyncUserProfileFromSSO(localUser.Id);
+
             var result = new AuthResponse
             {
                 Id = localUser.Id,
@@ -144,6 +156,12 @@ namespace BKU.ProjectManagement.Services.Implements
                 var ssoStudent = (await _ssoStudentRepository.GetByCondition(x => x.UserId == localUser.SsoUserId)).FirstOrDefault();
                 if (ssoStudent == null) return ApiResponse<string>.ErrorResult("SSO Student profile not found");
 
+                // Lookup local IDs for Master Data
+                var localMajor = (await _majorRepository.GetByCondition(x => x.SsoMajorId == ssoStudent.MajorId)).FirstOrDefault();
+                var localClassGroup = (await _classGroupRepository.GetByCondition(x => x.SsoClassGroupId == ssoStudent.ClassGroupId)).FirstOrDefault();
+
+                if (localMajor == null) return ApiResponse<string>.ErrorResult($"Local Major for SsoMajorId {ssoStudent.MajorId} not found. Please sync master data first.");
+
                 var localStudent = (await _studentRepository.GetByCondition(x => x.AppUserId == localUser.Id)).FirstOrDefault();
                 if (localStudent == null)
                 {
@@ -152,20 +170,26 @@ namespace BKU.ProjectManagement.Services.Implements
                         AppUserId = localUser.Id,
                         SsoStudentId = ssoStudent.Id,
                         StudentCode = ssoStudent.StudentId,
+                        FirstName = ssoStudent.FirstName,
+                        LastName = ssoStudent.LastName,
                         FullName = ssoStudent.FullName,
+                        DateOfBirth = ssoStudent.DateOfBirth,
                         Email = localUser.UserName + "@student.bku.edu.vn", // Demo email
                         PhoneNumber = "",
-                        ClassGroupId = ssoStudent.ClassGroupId,
-                        MajorId = ssoStudent.MajorId,
+                        ClassGroupId = localClassGroup?.Id,
+                        MajorId = localMajor.Id,
                         LastSyncedAt = DateTime.Now
                     };
                     await _studentRepository.Insert(localStudent);
                 }
                 else
                 {
+                    localStudent.FirstName = ssoStudent.FirstName;
+                    localStudent.LastName = ssoStudent.LastName;
                     localStudent.FullName = ssoStudent.FullName;
-                    localStudent.ClassGroupId = ssoStudent.ClassGroupId;
-                    localStudent.MajorId = ssoStudent.MajorId;
+                    localStudent.DateOfBirth = ssoStudent.DateOfBirth;
+                    localStudent.ClassGroupId = localClassGroup?.Id;
+                    localStudent.MajorId = localMajor.Id;
                     localStudent.LastSyncedAt = DateTime.Now;
                     await _studentRepository.Update(localStudent);
                 }
@@ -176,6 +200,11 @@ namespace BKU.ProjectManagement.Services.Implements
                 var ssoTeacher = (await _ssoTeacherRepository.GetByCondition(x => x.UserId == localUser.SsoUserId)).FirstOrDefault();
                 if (ssoTeacher == null) return ApiResponse<string>.ErrorResult("SSO Teacher profile not found");
 
+                // Lookup local IDs for Master Data
+                var localCourse = (await _courseRepository.GetByCondition(x => x.SsoCourseId == ssoTeacher.CourseId)).FirstOrDefault();
+                
+                if (localCourse == null) return ApiResponse<string>.ErrorResult($"Local Course for SsoCourseId {ssoTeacher.CourseId} not found. Please sync master data first.");
+
                 var localLecturer = (await _lecturerRepository.GetByCondition(x => x.AppUserId == localUser.Id)).FirstOrDefault();
                 if (localLecturer == null)
                 {
@@ -184,18 +213,24 @@ namespace BKU.ProjectManagement.Services.Implements
                         AppUserId = localUser.Id,
                         SsoTeacherId = ssoTeacher.Id,
                         TeacherCode = ssoTeacher.TeacherId,
+                        FirstName = ssoTeacher.FirstName,
+                        LastName = ssoTeacher.LastName,
                         FullName = ssoTeacher.FullName,
+                        DateOfBirth = ssoTeacher.DateOfBirth,
                         Email = localUser.UserName + "@bku.edu.vn", // Demo email
                         PhoneNumber = "",
-                        CourseId = ssoTeacher.CourseId,
+                        CourseId = localCourse.Id,
                         LastSyncedAt = DateTime.Now
                     };
                     await _lecturerRepository.Insert(localLecturer);
                 }
                 else
                 {
+                    localLecturer.FirstName = ssoTeacher.FirstName;
+                    localLecturer.LastName = ssoTeacher.LastName;
                     localLecturer.FullName = ssoTeacher.FullName;
-                    localLecturer.CourseId = ssoTeacher.CourseId;
+                    localLecturer.DateOfBirth = ssoTeacher.DateOfBirth;
+                    localLecturer.CourseId = localCourse.Id;
                     localLecturer.LastSyncedAt = DateTime.Now;
                     await _lecturerRepository.Update(localLecturer);
                 }
