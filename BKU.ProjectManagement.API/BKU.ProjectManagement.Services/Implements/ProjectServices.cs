@@ -31,8 +31,16 @@ namespace BKU.ProjectManagement.Services.Implements
 
         public async Task<ApiResponse<PagedResult<ProjectPeriodResponse>>> GetPaging(ProjectGetPagingRequest request)
         {
+            Guid? semesterGuid = null;
+            if (!string.IsNullOrEmpty(request.SemesterId) && Guid.TryParse(request.SemesterId, out var guid))
+            {
+                semesterGuid = guid;
+            }
+
             var pagedData = await _repository.GetWithPaging(request.PageIndex, request.PageSize, 
-                x => !x.IsDelete && (string.IsNullOrEmpty(request.SearchTerm) || x.Name.Contains(request.SearchTerm)));
+                x => !x.IsDelete 
+                && (string.IsNullOrEmpty(request.SearchTerm) || x.Name.Contains(request.SearchTerm))
+                && (!semesterGuid.HasValue || x.SemesterId == semesterGuid.Value));
             
             var result = new PagedResult<ProjectPeriodResponse>
             {
@@ -177,7 +185,14 @@ namespace BKU.ProjectManagement.Services.Implements
 
         public async Task<ApiResponse<PagedResult<RegistrationResponse>>> GetPaging(ProjectGetPagingRequest request)
         {
-            var pagedData = await _repository.GetWithPaging(request.PageIndex, request.PageSize, x => !x.IsDelete);
+            Guid? semesterGuid = null;
+            if (!string.IsNullOrEmpty(request.SemesterId) && Guid.TryParse(request.SemesterId, out var guid))
+            {
+                semesterGuid = guid;
+            }
+
+            var pagedData = await _repository.GetWithPaging(request.PageIndex, request.PageSize, 
+                x => !x.IsDelete && (!semesterGuid.HasValue || x.ProjectPeriod.SemesterId == semesterGuid.Value));
             
             var result = new PagedResult<RegistrationResponse>
             {
