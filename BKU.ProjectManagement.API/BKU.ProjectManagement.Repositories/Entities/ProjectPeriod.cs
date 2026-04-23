@@ -1,4 +1,4 @@
-﻿using BKU.ProjectManagement.Shared.Entities;
+using BKU.ProjectManagement.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +15,9 @@ namespace BKU.ProjectManagement.Repositories.Entities
         public string? Description { get; set; }
         public string AcademicYear { get; set; } = null!;
         public int Stage { get; set; }
-        public DateTime? RegistrationStart { get; set; }
-        public DateTime? RegistrationEnd { get; set; }
-        public DateTime? ReviewStart { get; set; }
-        public DateTime? ReviewEnd { get; set; }
-        public DateTime? AssignmentLockAt { get; set; }
-        public DateTime? ProgressStart { get; set; }
-        public DateTime? ProgressEnd { get; set; }
-        public DateTime? FinalSubmitStart { get; set; }
-        public DateTime? FinalSubmitEnd { get; set; }
+        public int Type { get; set; } // Using int to store ProjectPeriodType
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int Status { get; set; } = 1;
 
         public virtual Semester Semester { get; set; } = null!;

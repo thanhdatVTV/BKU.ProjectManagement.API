@@ -13,6 +13,9 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
         public string? Description { get; set; }
         public string AcademicYear { get; set; } = null!;
         public int Stage { get; set; }
+        public int Type { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int Status { get; set; }
         public Guid SemesterId { get; set; }
     }
@@ -25,6 +28,9 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
         [Required]
         public string AcademicYear { get; set; } = null!;
         public int Stage { get; set; }
+        public int Type { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public Guid SemesterId { get; set; }
     }
 
@@ -34,6 +40,9 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
         public string? Description { get; set; }
         public string? AcademicYear { get; set; }
         public int? Stage { get; set; }
+        public int? Type { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int? Status { get; set; }
     }
 
