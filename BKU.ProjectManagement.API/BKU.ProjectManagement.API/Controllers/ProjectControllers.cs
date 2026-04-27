@@ -107,7 +107,6 @@ namespace BKU.ProjectManagement.API.Controllers
     }
 
     // === StudentProjectRegistrationController ===
-    [Route("api/student-registrations")]
     public class StudentProjectRegistrationController : BaseController
     {
         private readonly IStudentProjectRegistrationService _service;
