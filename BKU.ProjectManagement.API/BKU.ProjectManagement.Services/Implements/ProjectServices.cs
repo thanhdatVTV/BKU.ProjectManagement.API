@@ -165,21 +165,24 @@ namespace BKU.ProjectManagement.Services.Implements
     {
         private readonly IStudentProjectRegistrationRepository _repository;
         private readonly IStudentProjectRegistrationChoiceRepository _choiceRepository;
+        private readonly IAppStudentRepository _studentRepository;
         private readonly IMapper _mapper;
 
         public StudentProjectRegistrationService(
             IStudentProjectRegistrationRepository repository, 
             IStudentProjectRegistrationChoiceRepository choiceRepository, 
+            IAppStudentRepository studentRepository,
             IMapper mapper)
         {
             _repository = repository;
             _choiceRepository = choiceRepository;
+            _studentRepository = studentRepository;
             _mapper = mapper;
         }
 
         public async Task<ApiResponse<List<RegistrationResponse>>> GetAllPublicData()
         {
-            var data = await _repository.GetByCondition(x => !x.IsDelete);
+            var data = await _repository.GetByCondition(x => !x.IsDelete, includeProperties: "Student,SelectedMajor");
             return ApiResponse<List<RegistrationResponse>>.SuccessResult(_mapper.Map<List<RegistrationResponse>>(data));
         }
 
@@ -192,7 +195,8 @@ namespace BKU.ProjectManagement.Services.Implements
             }
 
             var pagedData = await _repository.GetWithPaging(request.PageIndex, request.PageSize, 
-                x => !x.IsDelete && (!semesterGuid.HasValue || x.ProjectPeriod.SemesterId == semesterGuid.Value));
+                x => !x.IsDelete && (!semesterGuid.HasValue || x.ProjectPeriod.SemesterId == semesterGuid.Value),
+                includeProperties: "Student,SelectedMajor");
             
             var result = new PagedResult<RegistrationResponse>
             {
@@ -212,8 +216,61 @@ namespace BKU.ProjectManagement.Services.Implements
             return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(data));
         }
 
+        public async Task<ApiResponse<List<RegistrationResponse>>> GetMyRegistration(Guid userId)
+        {
+            var student = (await _studentRepository.GetByCondition(x => x.AppUserId == userId)).FirstOrDefault();
+            if (student == null) return ApiResponse<List<RegistrationResponse>>.ErrorResult("Student profile not found", 404);
+
+            var registrations = (await _repository.GetByCondition(x => x.StudentId == student.Id && !x.IsDelete, includeProperties: "Student,SelectedMajor"))
+                .OrderByDescending(x => x.SubmittedAt)
+                .ToList();
+
+            return ApiResponse<List<RegistrationResponse>>.SuccessResult(_mapper.Map<List<RegistrationResponse>>(registrations));
+        }
+
         public async Task<ApiResponse<RegistrationResponse>> Create(RegistrationCreateRequest request)
         {
+            // Check if ANY registration exists for this student in this period
+            var existing = (await _repository.GetByCondition(x => 
+                x.StudentId == request.StudentId && 
+                x.ProjectPeriodId == request.ProjectPeriodId)).FirstOrDefault();
+
+            if (existing != null)
+            {
+                // If switching to a different major, clear old choices as they are no longer valid
+                if (existing.SelectedMajorId != request.SelectedMajorId)
+                {
+                    var oldChoices = await _choiceRepository.GetByCondition(x => x.RegistrationId == existing.Id);
+                    foreach (var oc in oldChoices) await _choiceRepository.Delete(oc.Id);
+                }
+
+                // Update existing registration
+                existing.SelectedMajorId = request.SelectedMajorId;
+                existing.SubmittedAt = DateTime.Now;
+                existing.Status = 0; // Reset to pending
+                existing.IsDelete = false; // Re-activate if it was deleted
+                await _repository.Update(existing);
+
+                // Update choices if provided
+                if (request.Choices != null && request.Choices.Any())
+                {
+                    // Remove old choices
+                    var oldChoices = await _choiceRepository.GetByCondition(x => x.RegistrationId == existing.Id);
+                    foreach (var oc in oldChoices) await _choiceRepository.Delete(oc.Id);
+
+                    // Add new choices
+                    var choices = request.Choices.Select(c => new StudentProjectRegistrationChoice
+                    {
+                        RegistrationId = existing.Id,
+                        LecturerId = c.LecturerId,
+                        PriorityOrder = c.PriorityOrder
+                    }).ToList();
+                    await _choiceRepository.Insert(choices);
+                }
+
+                return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(existing), "Registration updated successfully");
+            }
+
             var registration = new StudentProjectRegistration
             {
                 StudentId = request.StudentId,
@@ -247,6 +304,22 @@ namespace BKU.ProjectManagement.Services.Implements
             _mapper.Map(request, entity);
             await _repository.Update(entity);
             return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(entity));
+        }
+
+        public async Task<ApiResponse<bool>> CancelRegistration(Guid userId, int majorId)
+        {
+            var student = (await _studentRepository.GetByCondition(x => x.AppUserId == userId)).FirstOrDefault();
+            if (student == null) return ApiResponse<bool>.ErrorResult("Student profile not found", 404);
+
+            var registration = (await _repository.GetByCondition(x => x.StudentId == student.Id && x.SelectedMajorId == majorId && !x.IsDelete))
+                .OrderByDescending(x => x.SubmittedAt)
+                .FirstOrDefault();
+
+            if (registration == null) return ApiResponse<bool>.ErrorResult("Registration not found", 404);
+
+            registration.IsDelete = true;
+            await _repository.Update(registration);
+            return ApiResponse<bool>.SuccessResult(true, "Registration cancelled successfully");
         }
 
         public async Task<ApiResponse<bool>> SoftDelete(Guid id)

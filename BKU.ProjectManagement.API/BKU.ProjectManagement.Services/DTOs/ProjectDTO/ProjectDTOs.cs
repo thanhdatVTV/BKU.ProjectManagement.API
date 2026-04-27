@@ -81,8 +81,11 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
     {
         public Guid Id { get; set; }
         public Guid StudentId { get; set; }
+        public string? StudentName { get; set; }
+        public string? StudentCode { get; set; }
         public Guid ProjectPeriodId { get; set; }
         public int SelectedMajorId { get; set; }
+        public string? SelectedMajorName { get; set; }
         public DateTime? SubmittedAt { get; set; }
         public int Status { get; set; }
     }

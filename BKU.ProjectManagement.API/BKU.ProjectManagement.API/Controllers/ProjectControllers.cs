@@ -107,20 +107,34 @@ namespace BKU.ProjectManagement.API.Controllers
     }
 
     // === StudentProjectRegistrationController ===
+    [Route("api/student-registrations")]
     public class StudentProjectRegistrationController : BaseController
     {
         private readonly IStudentProjectRegistrationService _service;
+        private readonly IAppStudentService _studentService;
         private readonly IRegistrationReviewHistoryService _historyService;
-        public StudentProjectRegistrationController(IStudentProjectRegistrationService service, IRegistrationReviewHistoryService historyService)
+
+        public StudentProjectRegistrationController(
+            IStudentProjectRegistrationService service, 
+            IAppStudentService studentService,
+            IRegistrationReviewHistoryService historyService)
         {
             _service = service;
+            _studentService = studentService;
             _historyService = historyService;
         }
 
-        [HttpGet("paging")]
+        [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResult<RegistrationResponse>>>> GetPaging([FromQuery] ProjectGetPagingRequest request)
         {
             var result = await _service.GetPaging(request);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpGet("my-registration")]
+        public async Task<ActionResult<ApiResponse<List<RegistrationResponse>>>> GetMyRegistration([FromHeader] Guid userId)
+        {
+            var result = await _service.GetMyRegistration(userId);
             return StatusCode(result.StatusCode, result);
         }
 
@@ -132,9 +146,24 @@ namespace BKU.ProjectManagement.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<RegistrationResponse>>> Register([FromBody] RegistrationCreateRequest request)
+        public async Task<ActionResult<ApiResponse<RegistrationResponse>>> Register([FromBody] RegistrationCreateRequest request, [FromHeader] Guid userId)
         {
+            // If StudentId is not provided from FE, find it from userId
+            if (request.StudentId == Guid.Empty)
+            {
+                var studentResult = await _studentService.GetByUserId(userId);
+                if (studentResult.StatusCode != 200) return StatusCode(studentResult.StatusCode, studentResult);
+                request.StudentId = studentResult.Data!.Id;
+            }
+
             var result = await _service.Create(request);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpDelete("my-registration")]
+        public async Task<ActionResult<ApiResponse<bool>>> CancelRegistration([FromHeader] Guid userId, [FromQuery] int majorId)
+        {
+            var result = await _service.CancelRegistration(userId, majorId);
             return StatusCode(result.StatusCode, result);
         }
 

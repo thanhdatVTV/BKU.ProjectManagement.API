@@ -32,7 +32,9 @@ namespace BKU.ProjectManagement.Services.Interfaces
         Task<ApiResponse<PagedResult<RegistrationResponse>>> GetPaging(ProjectGetPagingRequest request);
         Task<ApiResponse<RegistrationResponse>> GetById(Guid id);
         Task<ApiResponse<RegistrationResponse>> Create(RegistrationCreateRequest request);
+        Task<ApiResponse<List<RegistrationResponse>>> GetMyRegistration(Guid userId);
         Task<ApiResponse<RegistrationResponse>> Update(Guid id, RegistrationUpdateRequest request);
+        Task<ApiResponse<bool>> CancelRegistration(Guid userId, int majorId);
         Task<ApiResponse<bool>> SoftDelete(Guid id);
     }
 

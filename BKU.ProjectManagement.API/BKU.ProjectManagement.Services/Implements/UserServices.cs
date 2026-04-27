@@ -323,6 +323,13 @@ namespace BKU.ProjectManagement.Services.Implements
             return ApiResponse<StudentResponse>.SuccessResult(_mapper.Map<StudentResponse>(data));
         }
 
+        public async Task<ApiResponse<StudentResponse>> GetByUserId(Guid userId)
+        {
+            var data = (await _repository.GetByCondition(x => x.AppUserId == userId && !x.IsDelete)).FirstOrDefault();
+            if (data == null) return ApiResponse<StudentResponse>.ErrorResult("Student not found", 404);
+            return ApiResponse<StudentResponse>.SuccessResult(_mapper.Map<StudentResponse>(data));
+        }
+
         public async Task<ApiResponse<StudentResponse>> Create(StudentCreateRequest request)
         {
             var entity = _mapper.Map<AppStudent>(request);

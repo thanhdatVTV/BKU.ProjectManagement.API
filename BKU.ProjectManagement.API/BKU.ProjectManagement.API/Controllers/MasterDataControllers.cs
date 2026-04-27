@@ -65,11 +65,13 @@ namespace BKU.ProjectManagement.API.Controllers
     }
 
     // === AppMajorController ===
+    [Route("api/majors")]
     public class AppMajorController : BaseController
     {
         private readonly IAppMajorService _service;
         public AppMajorController(IAppMajorService service) { _service = service; }
 
+        [HttpGet]
         [HttpGet("public-data")]
         public async Task<ActionResult<ApiResponse<List<MajorResponse>>>> GetAll()
         {

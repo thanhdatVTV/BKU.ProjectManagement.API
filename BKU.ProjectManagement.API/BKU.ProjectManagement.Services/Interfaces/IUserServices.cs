@@ -25,6 +25,7 @@ namespace BKU.ProjectManagement.Services.Interfaces
         Task<ApiResponse<List<StudentResponse>>> GetAllPublicData();
         Task<ApiResponse<PagedResult<StudentResponse>>> GetPaging(UserGetPagingRequest request);
         Task<ApiResponse<StudentResponse>> GetById(Guid id);
+        Task<ApiResponse<StudentResponse>> GetByUserId(Guid userId);
         Task<ApiResponse<StudentResponse>> Create(StudentCreateRequest request);
         Task<ApiResponse<StudentResponse>> Update(Guid id, StudentUpdateRequest request);
         Task<ApiResponse<bool>> SoftDelete(Guid id);

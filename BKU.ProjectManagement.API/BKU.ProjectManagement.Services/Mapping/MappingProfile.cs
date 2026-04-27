@@ -80,7 +80,10 @@ namespace BKU.ProjectManagement.Services.Mapping
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // Registration
-            CreateMap<StudentProjectRegistration, RegistrationResponse>();
+            CreateMap<StudentProjectRegistration, RegistrationResponse>()
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.FullName))
+                .ForMember(dest => dest.StudentCode, opt => opt.MapFrom(src => src.Student.StudentCode))
+                .ForMember(dest => dest.SelectedMajorName, opt => opt.MapFrom(src => src.SelectedMajor.MajorName));
             CreateMap<RegistrationCreateRequest, StudentProjectRegistration>();
             CreateMap<RegistrationUpdateRequest, StudentProjectRegistration>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
