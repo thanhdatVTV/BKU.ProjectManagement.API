@@ -236,6 +236,47 @@ namespace BKU.ProjectManagement.Services.Implements
                 }
                 return ApiResponse<string>.SuccessResult("Lecturer profile synced successfully");
             }
+            else if (localUser.UserType == 3) // Admin
+            {
+                var ssoTeacher = (await _ssoTeacherRepository.GetByCondition(x => x.UserId == localUser.SsoUserId)).FirstOrDefault();
+                if (ssoTeacher == null) return ApiResponse<string>.ErrorResult("SSO Teacher profile not found");
+
+                // Lookup local IDs for Master Data
+                var localCourse = (await _courseRepository.GetByCondition(x => x.SsoCourseId == ssoTeacher.CourseId)).FirstOrDefault();
+                
+                if (localCourse == null) return ApiResponse<string>.ErrorResult($"Local Course for SsoCourseId {ssoTeacher.CourseId} not found. Please sync master data first.");
+
+                var localLecturer = (await _lecturerRepository.GetByCondition(x => x.AppUserId == localUser.Id)).FirstOrDefault();
+                if (localLecturer == null)
+                {
+                    localLecturer = new AppLecturer
+                    {
+                        AppUserId = localUser.Id,
+                        SsoTeacherId = ssoTeacher.Id,
+                        TeacherCode = ssoTeacher.TeacherId,
+                        FirstName = ssoTeacher.FirstName,
+                        LastName = ssoTeacher.LastName,
+                        FullName = ssoTeacher.FullName,
+                        DateOfBirth = ssoTeacher.DateOfBirth,
+                        Email = localUser.UserName + "@bku.edu.vn", // Demo email
+                        PhoneNumber = "",
+                        CourseId = localCourse.Id,
+                        LastSyncedAt = DateTime.Now
+                    };
+                    await _lecturerRepository.Insert(localLecturer);
+                }
+                else
+                {
+                    localLecturer.FirstName = ssoTeacher.FirstName;
+                    localLecturer.LastName = ssoTeacher.LastName;
+                    localLecturer.FullName = ssoTeacher.FullName;
+                    localLecturer.DateOfBirth = ssoTeacher.DateOfBirth;
+                    localLecturer.CourseId = localCourse.Id;
+                    localLecturer.LastSyncedAt = DateTime.Now;
+                    await _lecturerRepository.Update(localLecturer);
+                }
+                return ApiResponse<string>.SuccessResult("Admin profile synced successfully");
+            }
 
             return ApiResponse<string>.ErrorResult("Invalid user type for syncing profile");
         }
