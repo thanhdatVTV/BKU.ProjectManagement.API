@@ -166,17 +166,26 @@ namespace BKU.ProjectManagement.Services.Implements
         private readonly IStudentProjectRegistrationRepository _repository;
         private readonly IStudentProjectRegistrationChoiceRepository _choiceRepository;
         private readonly IAppStudentRepository _studentRepository;
+        private readonly IProjectPeriodRepository _periodRepository;
+        private readonly IAppLecturerRepository _lecturerRepository;
+        private readonly IRegistrationReviewHistoryRepository _historyRepository;
         private readonly IMapper _mapper;
 
         public StudentProjectRegistrationService(
             IStudentProjectRegistrationRepository repository, 
             IStudentProjectRegistrationChoiceRepository choiceRepository, 
             IAppStudentRepository studentRepository,
+            IProjectPeriodRepository periodRepository,
+            IAppLecturerRepository lecturerRepository,
+            IRegistrationReviewHistoryRepository historyRepository,
             IMapper mapper)
         {
             _repository = repository;
             _choiceRepository = choiceRepository;
             _studentRepository = studentRepository;
+            _periodRepository = periodRepository;
+            _lecturerRepository = lecturerRepository;
+            _historyRepository = historyRepository;
             _mapper = mapper;
         }
 
@@ -297,6 +306,61 @@ namespace BKU.ProjectManagement.Services.Implements
             return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(registration), "Registration successful");
         }
 
+        public async Task<ApiResponse<RegistrationResponse>> RegisterSupervisor(SupervisorRegistrationCreateRequest request, Guid userId)
+        {
+            try
+            {
+                // 1. Tìm thông tin sinh viên từ userId
+                var student = (await _studentRepository.GetByCondition(x => x.AppUserId == userId && !x.IsDelete)).FirstOrDefault();
+                if (student == null)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Không tìm thấy thông tin sinh viên.", 404);
+
+                // 2. Kiểm tra sinh viên đã đăng ký chuyên ngành chưa (Giai đoạn 1)
+                var myRegistrations = await _repository.GetByCondition(x => x.StudentId == student.Id && !x.IsDelete);
+                if (!myRegistrations.Any())
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Bạn chưa đăng ký nguyện vọng chuyên ngành. Vui lòng hoàn thành Giai đoạn 1 trước.", 400);
+
+                var latestRegistration = myRegistrations.OrderByDescending(x => x.SubmittedAt).First();
+
+                // 3. Tìm đợt đồ án Giai đoạn 2 đang diễn ra
+                var stageTwoPeriod = (await _periodRepository.GetByCondition(p => p.Stage == 2 && p.Status == 1 && !p.IsDelete)).FirstOrDefault();
+                if (stageTwoPeriod == null)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Hiện không có đợt đăng ký GVHD (Giai đoạn 2) nào đang mở.", 400);
+
+                // 4. Kiểm tra sinh viên đã có đăng ký GVHD trong đợt này chưa
+                var existingReg = (await _repository.GetByCondition(r => r.StudentId == student.Id && r.ProjectPeriodId == stageTwoPeriod.Id && !r.IsDelete)).FirstOrDefault();
+                if (existingReg != null && existingReg.Status == 1) // Approved
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Đăng ký GVHD của bạn đã được phê duyệt trong đợt này. Không thể đăng ký lại.", 400);
+
+                // 5. Kiểm tra giảng viên có tồn tại không
+                var lecturer = await _lecturerRepository.GetById(request.LecturerId);
+                if (lecturer == null || lecturer.IsDelete)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Giảng viên không tồn tại hoặc không hợp lệ.", 404);
+
+                // 6. Gửi đăng ký (Tạo mới hoặc cập nhật registration cho Stage 2)
+                var registrationPayload = new RegistrationCreateRequest
+                {
+                    StudentId = student.Id,
+                    ProjectPeriodId = stageTwoPeriod.Id,
+                    SelectedMajorId = latestRegistration.SelectedMajorId,
+                    Choices = new List<RegistrationChoiceRequest>
+                    {
+                        new RegistrationChoiceRequest
+                        {
+                            LecturerId = request.LecturerId,
+                            PriorityOrder = 1
+                        }
+                    }
+                };
+
+                return await Create(registrationPayload);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<RegistrationResponse>.ErrorResult($"Lỗi hệ thống khi đăng ký: {ex.Message}", 500);
+            }
+        }
+
         public async Task<ApiResponse<RegistrationResponse>> Update(Guid id, RegistrationUpdateRequest request)
         {
             var entity = await _repository.GetById(id);
@@ -331,6 +395,133 @@ namespace BKU.ProjectManagement.Services.Implements
             entity.IsDelete = true;
             await _repository.Update(entity);
             return ApiResponse<bool>.SuccessResult(true, "Registration deleted successfully");
+        }
+
+        public async Task<ApiResponse<RegistrationResponse>> ApproveSupervisor(Guid id, SupervisorApproveRequest request, Guid reviewerUserId)
+        {
+            try
+            {
+                // 1. Kiểm tra registration tồn tại
+                var registration = await _repository.GetById(id);
+                if (registration == null || registration.IsDelete)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Không tìm thấy thông tin đăng ký.", 404);
+
+                // 2. Kiểm tra trạng thái hiện tại (phải là Pending = 0)
+                if (registration.Status != 0)
+                    return ApiResponse<RegistrationResponse>.ErrorResult(
+                        $"Không thể phê duyệt đăng ký ở trạng thái hiện tại (Status: {registration.Status}).", 400);
+
+                // 3. Kiểm tra giai đoạn của period
+                var period = await _periodRepository.GetById(registration.ProjectPeriodId);
+                if (period == null || period.IsDelete)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Không tìm thấy đợt đồ án liên quan.", 404);
+
+                // Logic di cư: Nếu đang ở Giai đoạn 1, thử tìm Giai đoạn 2 đang mở
+                if (period.Stage == 1)
+                {
+                    var activeStageTwo = (await _periodRepository.GetByCondition(p => p.Stage == 2 && p.Status == 1 && !p.IsDelete)).FirstOrDefault();
+                    if (activeStageTwo != null)
+                    {
+                        registration.ProjectPeriodId = activeStageTwo.Id;
+                    }
+                    else
+                    {
+                        return ApiResponse<RegistrationResponse>.ErrorResult(
+                            "Đăng ký này thuộc Giai đoạn 1 và hiện không có đợt Giai đoạn 2 nào đang mở để phê duyệt.", 400);
+                    }
+                }
+                else if (period.Stage != 2)
+                {
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Đăng ký này không thuộc Giai đoạn 2 (Đăng ký GVHD).", 400);
+                }
+
+                // 4. Kiểm tra giảng viên được approve có tồn tại không
+                var lecturer = await _lecturerRepository.GetById(request.ApprovedLecturerId);
+                if (lecturer == null || lecturer.IsDelete)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Giảng viên được chọn để phê duyệt không tồn tại.", 404);
+
+                // 5. Cập nhật thông tin đăng ký
+                registration.Status = 1; // Approved
+                registration.ApprovedLecturerId = request.ApprovedLecturerId;
+                registration.RejectReason = null;
+                registration.ReviewedAt = DateTime.Now;
+                registration.ReviewedByUserId = reviewerUserId;
+                registration.UpdatedDate = DateTime.Now;
+                registration.UpdatedBy = reviewerUserId.ToString();
+
+                await _repository.Update(registration);
+
+                // 6. Ghi lịch sử review
+                await _historyRepository.Insert(new RegistrationReviewHistory
+                {
+                    RegistrationId = id,
+                    ActionBy = reviewerUserId,
+                    ActionAt = DateTime.Now,
+                    Action = 1, // Approved
+                    Comment = "Phê duyệt đăng ký giảng viên hướng dẫn.",
+                    CreatedDate = DateTime.Now,
+                    CreatedBy = reviewerUserId.ToString()
+                });
+
+                return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(registration), "Phê duyệt đăng ký GVHD thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<RegistrationResponse>.ErrorResult($"Lỗi hệ thống khi phê duyệt: {ex.Message}", 500);
+            }
+        }
+
+        public async Task<ApiResponse<RegistrationResponse>> RejectSupervisor(Guid id, SupervisorRejectRequest request, Guid reviewerUserId)
+        {
+            try
+            {
+                // 1. Kiểm tra registration tồn tại
+                var registration = await _repository.GetById(id);
+                if (registration == null || registration.IsDelete)
+                    return ApiResponse<RegistrationResponse>.ErrorResult("Không tìm thấy thông tin đăng ký.", 404);
+
+                // 2. Kiểm tra trạng thái hiện tại (phải là Pending = 0)
+                if (registration.Status != 0)
+                    return ApiResponse<RegistrationResponse>.ErrorResult(
+                        $"Không thể từ chối đăng ký ở trạng thái hiện tại (Status: {registration.Status}).", 400);
+
+                // 3. Kiểm tra giai đoạn (di cư nếu cần để đúng đợt)
+                var period = await _periodRepository.GetById(registration.ProjectPeriodId);
+                if (period != null && period.Stage == 1)
+                {
+                    var activeStageTwo = (await _periodRepository.GetByCondition(p => p.Stage == 2 && p.Status == 1 && !p.IsDelete)).FirstOrDefault();
+                    if (activeStageTwo != null) registration.ProjectPeriodId = activeStageTwo.Id;
+                }
+
+                // 4. Cập nhật thông tin từ chối
+                registration.Status = 2; // Rejected
+                registration.RejectReason = request.RejectReason ?? "Bị từ chối bởi Phòng Đào tạo.";
+                registration.ApprovedLecturerId = null;
+                registration.ReviewedAt = DateTime.Now;
+                registration.ReviewedByUserId = reviewerUserId;
+                registration.UpdatedDate = DateTime.Now;
+                registration.UpdatedBy = reviewerUserId.ToString();
+
+                await _repository.Update(registration);
+
+                // 5. Ghi lịch sử review
+                await _historyRepository.Insert(new RegistrationReviewHistory
+                {
+                    RegistrationId = id,
+                    ActionBy = reviewerUserId,
+                    ActionAt = DateTime.Now,
+                    Action = 2, // Rejected
+                    Comment = registration.RejectReason,
+                    CreatedDate = DateTime.Now,
+                    CreatedBy = reviewerUserId.ToString()
+                });
+
+                return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(registration), "Đã từ chối đăng ký GVHD.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<RegistrationResponse>.ErrorResult($"Lỗi hệ thống khi từ chối: {ex.Message}", 500);
+            }
         }
     }
 

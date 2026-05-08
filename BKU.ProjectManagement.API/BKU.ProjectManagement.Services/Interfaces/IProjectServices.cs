@@ -32,10 +32,13 @@ namespace BKU.ProjectManagement.Services.Interfaces
         Task<ApiResponse<PagedResult<RegistrationResponse>>> GetPaging(ProjectGetPagingRequest request);
         Task<ApiResponse<RegistrationResponse>> GetById(Guid id);
         Task<ApiResponse<RegistrationResponse>> Create(RegistrationCreateRequest request);
+        Task<ApiResponse<RegistrationResponse>> RegisterSupervisor(SupervisorRegistrationCreateRequest request, Guid userId);
         Task<ApiResponse<List<RegistrationResponse>>> GetMyRegistration(Guid userId);
         Task<ApiResponse<RegistrationResponse>> Update(Guid id, RegistrationUpdateRequest request);
         Task<ApiResponse<bool>> CancelRegistration(Guid userId, int majorId);
         Task<ApiResponse<bool>> SoftDelete(Guid id);
+        Task<ApiResponse<RegistrationResponse>> ApproveSupervisor(Guid id, SupervisorApproveRequest request, Guid reviewerUserId);
+        Task<ApiResponse<RegistrationResponse>> RejectSupervisor(Guid id, SupervisorRejectRequest request, Guid reviewerUserId);
     }
 
     public interface IRegistrationReviewHistoryService
