@@ -88,6 +88,11 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
         public string? SelectedMajorName { get; set; }
         public DateTime? SubmittedAt { get; set; }
         public int Status { get; set; }
+        public string? RejectReason { get; set; }
+        public Guid? ApprovedLecturerId { get; set; }
+        public string? ApprovedLecturerName { get; set; }
+        public DateTime? ReviewedAt { get; set; }
+        public List<RegistrationChoiceResponse> Choices { get; set; } = new List<RegistrationChoiceResponse>();
     }
 
     public class RegistrationCreateRequest
@@ -103,6 +108,7 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
         public int? Status { get; set; }
         public Guid? ApprovedLecturerId { get; set; }
         public string? RejectReason { get; set; }
+        public Guid? ProjectPeriodId { get; set; }
     }
 
     // === StudentProjectRegistrationChoice ===
@@ -111,8 +117,27 @@ namespace BKU.ProjectManagement.Services.DTOs.ProjectDTO
         public Guid Id { get; set; }
         public Guid RegistrationId { get; set; }
         public Guid LecturerId { get; set; }
+        public string? LecturerName { get; set; }
         public int PriorityOrder { get; set; }
         public int Status { get; set; }
+    }
+
+    // === Supervisor Registration (Phase 2) ===
+    public class SupervisorRegistrationCreateRequest
+    {
+        [Required]
+        public Guid LecturerId { get; set; }
+    }
+
+    public class SupervisorApproveRequest
+    {
+        [Required]
+        public Guid ApprovedLecturerId { get; set; }
+    }
+
+    public class SupervisorRejectRequest
+    {
+        public string? RejectReason { get; set; }
     }
 
     public class RegistrationChoiceRequest

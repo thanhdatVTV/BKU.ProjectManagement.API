@@ -182,7 +182,7 @@ namespace BKU.ProjectManagement.Services.Implements
 
         public async Task<ApiResponse<List<RegistrationResponse>>> GetAllPublicData()
         {
-            var data = await _repository.GetByCondition(x => !x.IsDelete, includeProperties: "Student,SelectedMajor");
+            var data = await _repository.GetByCondition(x => !x.IsDelete, includeProperties: "Student,SelectedMajor,ApprovedLecturer,StudentProjectRegistrationChoices,StudentProjectRegistrationChoices.Lecturer");
             return ApiResponse<List<RegistrationResponse>>.SuccessResult(_mapper.Map<List<RegistrationResponse>>(data));
         }
 
@@ -196,7 +196,7 @@ namespace BKU.ProjectManagement.Services.Implements
 
             var pagedData = await _repository.GetWithPaging(request.PageIndex, request.PageSize, 
                 x => !x.IsDelete && (!semesterGuid.HasValue || x.ProjectPeriod.SemesterId == semesterGuid.Value),
-                includeProperties: "Student,SelectedMajor");
+                includeProperties: "Student,SelectedMajor,ApprovedLecturer,StudentProjectRegistrationChoices,StudentProjectRegistrationChoices.Lecturer");
             
             var result = new PagedResult<RegistrationResponse>
             {
@@ -211,17 +211,18 @@ namespace BKU.ProjectManagement.Services.Implements
 
         public async Task<ApiResponse<RegistrationResponse>> GetById(Guid id)
         {
-            var data = await _repository.GetById(id);
-            if (data == null || data.IsDelete) return ApiResponse<RegistrationResponse>.ErrorResult("Registration not found", 404);
+            var items = await _repository.GetByCondition(x => x.Id == id && !x.IsDelete, includeProperties: "Student,SelectedMajor,ApprovedLecturer,StudentProjectRegistrationChoices,StudentProjectRegistrationChoices.Lecturer");
+            var data = items.FirstOrDefault();
+            if (data == null) return ApiResponse<RegistrationResponse>.ErrorResult("Registration not found", 404);
             return ApiResponse<RegistrationResponse>.SuccessResult(_mapper.Map<RegistrationResponse>(data));
         }
 
         public async Task<ApiResponse<List<RegistrationResponse>>> GetMyRegistration(Guid userId)
         {
             var student = (await _studentRepository.GetByCondition(x => x.AppUserId == userId)).FirstOrDefault();
-            if (student == null) return ApiResponse<List<RegistrationResponse>>.ErrorResult("Student profile not found", 404);
+            if (student == null) return ApiResponse<List<RegistrationResponse>>.SuccessResult(new List<RegistrationResponse>());
 
-            var registrations = (await _repository.GetByCondition(x => x.StudentId == student.Id && !x.IsDelete, includeProperties: "Student,SelectedMajor"))
+            var registrations = (await _repository.GetByCondition(x => x.StudentId == student.Id && !x.IsDelete, includeProperties: "Student,SelectedMajor,ApprovedLecturer,StudentProjectRegistrationChoices,StudentProjectRegistrationChoices.Lecturer"))
                 .OrderByDescending(x => x.SubmittedAt)
                 .ToList();
 

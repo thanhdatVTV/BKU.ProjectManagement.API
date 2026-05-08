@@ -141,5 +141,7 @@ namespace BKU.ProjectManagement.Services.DTOs.UserDTO
         public int PageIndex { get; set; } = 1;
         public int PageSize { get; set; } = 10;
         public string? SearchTerm { get; set; }
+        public int? MajorId { get; set; }
+        public int? FacultyId { get; set; }
     }
 }

@@ -83,13 +83,16 @@ namespace BKU.ProjectManagement.Services.Mapping
             CreateMap<StudentProjectRegistration, RegistrationResponse>()
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.FullName))
                 .ForMember(dest => dest.StudentCode, opt => opt.MapFrom(src => src.Student.StudentCode))
-                .ForMember(dest => dest.SelectedMajorName, opt => opt.MapFrom(src => src.SelectedMajor.MajorName));
+                .ForMember(dest => dest.SelectedMajorName, opt => opt.MapFrom(src => src.SelectedMajor.MajorName))
+                .ForMember(dest => dest.ApprovedLecturerName, opt => opt.MapFrom(src => src.ApprovedLecturer != null ? src.ApprovedLecturer.FullName : null))
+                .ForMember(dest => dest.Choices, opt => opt.MapFrom(src => src.StudentProjectRegistrationChoices));
             CreateMap<RegistrationCreateRequest, StudentProjectRegistration>();
             CreateMap<RegistrationUpdateRequest, StudentProjectRegistration>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // Choice
-            CreateMap<StudentProjectRegistrationChoice, RegistrationChoiceResponse>();
+            CreateMap<StudentProjectRegistrationChoice, RegistrationChoiceResponse>()
+                .ForMember(dest => dest.LecturerName, opt => opt.MapFrom(src => src.Lecturer != null ? src.Lecturer.FullName : null));
             CreateMap<RegistrationChoiceRequest, StudentProjectRegistrationChoice>();
 
             // ReviewHistory

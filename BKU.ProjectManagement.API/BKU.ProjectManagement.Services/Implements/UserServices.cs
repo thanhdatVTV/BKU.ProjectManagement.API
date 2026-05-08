@@ -379,7 +379,10 @@ namespace BKU.ProjectManagement.Services.Implements
         public async Task<ApiResponse<PagedResult<LecturerResponse>>> GetPaging(UserGetPagingRequest request)
         {
             var pagedData = await _repository.GetWithPaging(request.PageIndex, request.PageSize, 
-                x => !x.IsDelete && (string.IsNullOrEmpty(request.SearchTerm) || x.FullName.Contains(request.SearchTerm) || x.TeacherCode.Contains(request.SearchTerm)));
+                x => !x.IsDelete 
+                && (string.IsNullOrEmpty(request.SearchTerm) || x.FullName.Contains(request.SearchTerm) || x.TeacherCode.Contains(request.SearchTerm))
+                && (!request.MajorId.HasValue || x.MajorId == request.MajorId.Value)
+                && (!request.FacultyId.HasValue || x.FacultyId == request.FacultyId.Value));
             
             var result = new PagedResult<LecturerResponse>
             {
