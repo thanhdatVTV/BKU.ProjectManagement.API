@@ -10,15 +10,20 @@ namespace BKU.ProjectManagement.Services.DTOs.ProgressDTO
     {
         public Guid Id { get; set; }
         public Guid ProjectPeriodId { get; set; }
-        public Guid ProjectTopicId { get; set; }
-        public string TeamName { get; set; } = null!;
+        public string TeamCode { get; set; } = null!;
+        public string? TeamName { get; set; }
+        public Guid? LeaderStudentId { get; set; }
+        public string? LeaderStudentName { get; set; }
+        public Guid? AssignedLecturerId { get; set; }
+        public string? AssignedLecturerName { get; set; }
         public int Status { get; set; }
+        public int MaxMembers { get; set; }
+        public List<TeamMemberResponse> Members { get; set; } = new();
     }
 
     public class ProjectTeamCreateRequest
     {
         public Guid ProjectPeriodId { get; set; }
-        public Guid ProjectTopicId { get; set; }
         [Required]
         public string TeamName { get; set; } = null!;
         public List<Guid> MemberStudentIds { get; set; } = new List<Guid>();
@@ -30,14 +35,42 @@ namespace BKU.ProjectManagement.Services.DTOs.ProgressDTO
         public int? Status { get; set; }
     }
 
+    // Request tạo nhóm bởi sinh viên (tự động xác định leader, GVHD)
+    public class TeamCreateByStudentRequest
+    {
+        public string? TeamName { get; set; }
+    }
+
+    // Request mời thành viên vào nhóm
+    public class TeamInviteRequest
+    {
+        [Required]
+        public string StudentCode { get; set; } = null!;
+    }
+
+    // Request phản hồi lời mời
+    public class TeamInviteRespondRequest
+    {
+        [Required]
+        public Guid TeamId { get; set; }
+        [Required]
+        public bool Accept { get; set; }
+    }
+
     // === ProjectTeamMember ===
     public class TeamMemberResponse : BaseResponses
     {
         public Guid Id { get; set; }
         public Guid ProjectTeamId { get; set; }
         public Guid StudentId { get; set; }
+        public string? StudentName { get; set; }
+        public string? StudentCode { get; set; }
         public int Role { get; set; } // 1: Leader, 2: Member
         public bool IsActiveMember { get; set; }
+        public int Status { get; set; } // 0: Invited, 1: Accepted, 2: Declined, 3: Left
+        public DateTime JoinedAt { get; set; }
+        public string? TeamName { get; set; }
+        public string? TeamCode { get; set; }
     }
 
     // === TeacherAssignment ===

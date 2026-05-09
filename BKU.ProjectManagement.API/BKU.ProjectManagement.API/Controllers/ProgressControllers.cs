@@ -69,6 +69,55 @@ namespace BKU.ProjectManagement.API.Controllers
             var result = await _assignmentService.Create(request);
             return StatusCode(result.StatusCode, result);
         }
+
+        // === Team Management cho sinh viên ===
+
+        [HttpGet("my-team")]
+        public async Task<ActionResult<ApiResponse<ProjectTeamResponse>>> GetMyTeam([FromHeader] Guid userId)
+        {
+            var result = await _service.GetMyTeam(userId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("create")]
+        public async Task<ActionResult<ApiResponse<ProjectTeamResponse>>> CreateTeam(
+            [FromBody] TeamCreateByStudentRequest request, [FromHeader] Guid userId)
+        {
+            var result = await _service.CreateTeam(request, userId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("{id}/invite")]
+        public async Task<ActionResult<ApiResponse<bool>>> InviteMember(
+            Guid id, [FromBody] TeamInviteRequest request, [FromHeader] Guid userId)
+        {
+            var result = await _service.InviteMember(id, request, userId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPut("respond")]
+        public async Task<ActionResult<ApiResponse<bool>>> RespondToInvite(
+            [FromBody] TeamInviteRespondRequest request, [FromHeader] Guid userId)
+        {
+            var result = await _service.RespondToInvite(request, userId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("{id}/leave")]
+        public async Task<ActionResult<ApiResponse<bool>>> LeaveTeam(
+            Guid id, [FromHeader] Guid userId)
+        {
+            var result = await _service.LeaveTeam(id, userId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpGet("pending-invites")]
+        public async Task<ActionResult<ApiResponse<List<TeamMemberResponse>>>> GetPendingInvites(
+            [FromHeader] Guid userId)
+        {
+            var result = await _service.GetPendingInvites(userId);
+            return StatusCode(result.StatusCode, result);
+        }
     }
 
     // === ProgressReportController ===

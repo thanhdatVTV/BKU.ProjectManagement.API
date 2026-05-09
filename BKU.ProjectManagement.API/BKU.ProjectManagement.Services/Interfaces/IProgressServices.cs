@@ -14,6 +14,14 @@ namespace BKU.ProjectManagement.Services.Interfaces
         Task<ApiResponse<ProjectTeamResponse>> Create(ProjectTeamCreateRequest request);
         Task<ApiResponse<ProjectTeamResponse>> Update(Guid id, ProjectTeamUpdateRequest request);
         Task<ApiResponse<bool>> SoftDelete(Guid id);
+
+        // === Team Management cho sinh viên ===
+        Task<ApiResponse<ProjectTeamResponse>> GetMyTeam(Guid userId);
+        Task<ApiResponse<ProjectTeamResponse>> CreateTeam(TeamCreateByStudentRequest request, Guid userId);
+        Task<ApiResponse<bool>> InviteMember(Guid teamId, TeamInviteRequest request, Guid userId);
+        Task<ApiResponse<bool>> RespondToInvite(TeamInviteRespondRequest request, Guid userId);
+        Task<ApiResponse<bool>> LeaveTeam(Guid teamId, Guid userId);
+        Task<ApiResponse<List<TeamMemberResponse>>> GetPendingInvites(Guid userId);
     }
 
     public interface ITeacherAssignmentService

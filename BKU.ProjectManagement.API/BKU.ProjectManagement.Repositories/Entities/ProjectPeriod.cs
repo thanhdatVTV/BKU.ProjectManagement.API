@@ -19,6 +19,7 @@ namespace BKU.ProjectManagement.Repositories.Entities
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int Status { get; set; } = 1;
+        public int MaxTeamMembers { get; set; } = 2;
 
         public virtual Semester Semester { get; set; } = null!;
         public virtual ICollection<LecturerCapacity> LecturerCapacities { get; set; } = new List<LecturerCapacity>();

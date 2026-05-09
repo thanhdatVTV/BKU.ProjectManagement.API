@@ -100,13 +100,19 @@ namespace BKU.ProjectManagement.Services.Mapping
             CreateMap<ReviewHistoryCreateRequest, RegistrationReviewHistory>();
 
             // ProjectTeam
-            CreateMap<ProjectTeam, ProjectTeamResponse>();
+            CreateMap<ProjectTeam, ProjectTeamResponse>()
+                .ForMember(dest => dest.LeaderStudentName, opt => opt.MapFrom(src => src.LeaderStudent != null ? src.LeaderStudent.FullName : null))
+                .ForMember(dest => dest.AssignedLecturerName, opt => opt.MapFrom(src => src.AssignedLecturer != null ? src.AssignedLecturer.FullName : null))
+                .ForMember(dest => dest.MaxMembers, opt => opt.MapFrom(src => (src.ProjectPeriod != null && src.ProjectPeriod.MaxTeamMembers > 0) ? src.ProjectPeriod.MaxTeamMembers : 2))
+                .ForMember(dest => dest.Members, opt => opt.MapFrom(src => src.ProjectTeamMembers));
             CreateMap<ProjectTeamCreateRequest, ProjectTeam>();
             CreateMap<ProjectTeamUpdateRequest, ProjectTeam>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // TeamMember
-            CreateMap<ProjectTeamMember, TeamMemberResponse>();
+            CreateMap<ProjectTeamMember, TeamMemberResponse>()
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student != null ? src.Student.FullName : null))
+                .ForMember(dest => dest.StudentCode, opt => opt.MapFrom(src => src.Student != null ? src.Student.StudentCode : null));
 
             // TeacherAssignment
             CreateMap<TeacherAssignment, TeacherAssignmentResponse>();
